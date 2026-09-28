@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: school-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/schooldiscovery
+    username: schoolapp
+    password: schoolapp
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8080

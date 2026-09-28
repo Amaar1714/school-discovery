@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: school-discovery-db
+    environment:
+      POSTGRES_DB: schooldiscovery
+      POSTGRES_USER: schoolapp
+      POSTGRES_PASSWORD: schoolapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U schoolapp -d schooldiscovery"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  school-service:
+    build:
+      context: .
+      args:
+        SERVICE_MODULE: school-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/schooldiscovery
+      SPRING_DATASOURCE_USERNAME: schoolapp
+      SPRING_DATASOURCE_PASSWORD: schoolapp
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  data-ingestion-service:
+    build:
+      context: .
+      args:
+        SERVICE_MODULE: data-ingestion-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/schooldiscovery
+      SPRING_DATASOURCE_USERNAME: schoolapp
+      SPRING_DATASOURCE_PASSWORD: schoolapp
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - school-service
+
+volumes:
+  postgres_data:

@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: data-ingestion-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/schooldiscovery
+    username: schoolapp
+    password: schoolapp
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8081
+
+gias:
+  url: https://dfe-digital.github.io/gias-data/schools.json
+
+ofsted:
+  csv-url: https://assets.publishing.service.gov.uk/media/66e1478fdb528c56bc8e830c/Management_information_-_state-funded_schools_-_latest_inspections_as_at_31_Aug_2024.csv
+
+ingestion:
+  cron: "0 0 5 * * ?"
